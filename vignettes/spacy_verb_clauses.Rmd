@@ -1,0 +1,188 @@
+---
+title: "What did Trump do?"
+author: "Kasper Welbers and Wouter van Atteveldt"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+
+
+library(rsyntax)
+library(spacyr)
+library(data.table)
+```
+
+
+```{r}
+txt = "President Donald Trump's fresh efforts to undermine medical and scientific experts and his failure to ask the country to make the sacrifices that could quell the coronavirus are consigning America to a constantly worsening pandemic with no clear route back to health"
+
+txt = "Trump recommitted to that strategy -- which defies the example of nations that have at least temporarily beaten back the virus -- by blasting the US Centers for Disease Control and Prevention guidelines on reopening schools on Wednesday as \"very tough and expensive.\""
+
+txt = 'Trump said that Biden is the dumbest of all candidates' 
+
+txt = 'Trump also claimed that Biden is on drugs. "they gave him a big fat shot in the ass"'
+
+txt = 'who according to Biden is '
+
+txt = "President Trump claims Mr Biden \"went crazy\" and called him \"xenophobic\" "
+
+spacy_parse(txt, dependency=T) %>%
+  #spacy_simplify() %>%
+  plot_tree()
+
+txt = 'If Trump had acted earlier, then as said by Biden, he would have saved thousands of lives.'
+spacy_parse(txt, dependency=T) %>%
+  annotate_tqueries('quote', spacy_quote_tqueries()) %>%
+  plot_tree(annotation='quote')
+  plot_tree(token, lemma, pos, annotation = 'quote', sentence_i = 1, pdf_file='~/Desktop/temp_meuk/tree2.pdf', textsize = 0.9)
+
+
+library(spacyr)
+txt = 'Trump has "cloaked America in darkness for much too long", Joe Biden said last Monday' 
+tokens = spacy_parse(txt, dependency=T)
+
+tq = tquery(label = 'verb', pos = "VERB", lemma = c("say", "state"),
+            children(label = "source", relation = "nsubj"),
+            children(label = "quote"))
+
+library(rsyntax)
+tokens %>%
+  annotate_tqueries('quote', tq=tq) %>%
+  plot_tree(annotation='quote')
+  plot_tree(token, lemma, pos, annotation='quote', pdf_file='~/Desktop/temp_meuk/tree1_ann.pdf', textsize = 1)
+```
+
+
+```{r}
+library(corpustools)
+txt = corpustools::sotu_
+
+tokens = spacy_parse(txt, dependency=T)
+tokens$pos[1] = 'PROPN'
+tokens = as_tokenindex(tokens)
+cat(apply(tokens[,c('sentence','token_id','token','lemma','pos','parent','relation','entity')], 1, paste, collapse=' & '), sep='\n')
+
+dev.off()
+tokens %>%
+  plot_tree(token, lemma, pos, pdf_file='~/Desktop/temp_meuk/tree1.pdf', textsize = 1.3)
+
+tokens %>%
+  plot_tree()
+
+tokens %>%
+  spacy_simplify() %>%
+  plot_tree()
+
+
+tokens %>%
+  annotate_tqueries('quote', spacy_quote_tqueries(), overwrite=T) %>%
+  plot_tree(annotation = 'quote')
+
+tokens %>%
+  annotate_tqueries('clause', spacy_clause_tqueries(), overwrite=T) %>%
+  plot_tree(annotation = 'clause')
+
+tokens %>%
+  spacy_simplify(rm_punct = T) %>%
+  annotate_tqueries('clause', spacy_clause_tqueries(), overwrite=T) %>%
+  cast_text('clause', subject='subject', verb='verb', predicate='predicate')
+```
+
+```{r}
+txt = "President Donald Trump ramped up attacks against his opponent, Joe Biden, calling Biden the \"dumbest of all candidates,\"."
+txt = "At one point in the speech, Trump seemingly threatened to attempt to ban Biden from being elected President of the United States."
+
+tokens = spacy_parse(txt, dependency=T)
+
+
+
+tokens %>%
+  annotate_tqueries('quote', spacy_quote_tqueries(), overwrite=T) %>%
+  spacy_span_quotes() %>%
+  plot_tree(annotation='quote')
+
+tokens %>%
+  spacy_simplify() %>%
+  annotate_tqueries('clause', spacy_clause_tqueries(), overwrite=T) %>%
+  plot_tree(annotation = 'clause')
+```
+
+```{r}
+txt = 'Trump said he would support an investigation into the postmaster general, whom he called ‘a very honest guy.’
+
+President Trump said on Monday that he would support an investigation of the postmaster general, Louis DeJoy, for reportedly pressuring employees at his former company to donate to Republican candidates and then reimbursing them through bonuses.
+
+“Let the investigations go,” Mr. Trump said when asked during a Labor Day news conference at the White House if he would support an inquiry into the practice, which was first reported by The Washington Post.
+
+Mr. DeJoy, through a spokesman, told The Washington Post that he “believes that he has always followed campaign fund-raising laws and regulations.”
+
+The arrangement at New Breed Logistics, Mr. DeJoy’s former company, was described to The Times by three former employees, who said that workers would receive bonuses if they donated to candidates he supported, and that it was expected that managers would participate. A fourth employee confirmed that managers at the company were routinely solicited to make donations. The four former employees spoke on the condition of anonymity for fear of professional retaliation.
+
+Monty Hagler, a spokesman for Mr. DeJoy, told The Times in a statement that Mr. DeJoy “was never notified” of any pressure employees might have felt to make a political contribution, and “regrets if any employee felt uncomfortable for any reason.”
+
+Mr. Hagler added that Mr. DeJoy had consulted with the former general counsel of the Federal Election Commission on election laws “to ensure that he, New Breed Logistics and any person affiliated with New Breed fully complied with any and all laws.”
+
+Mr. Trump defended Mr. DeJoy, a former top campaign donor he tapped to serve as postmaster general last May, as a “very respected man.” He said that he was only vaguely familiar with the report about the illegal fund-raising practice.
+
+“I think he’s a very honest guy, but we will see,” Mr. Trump said. When asked whether Mr. DeJoy should lose his job if the campaign finance scheme he was running was proved to be illegal, Mr. Trump said he was open to it: “If something could be proven that he did something wrong, always.”'
+
+txt2 = '‘I trust vaccines. I trust scientists. But I don’t trust Donald Trump,’ Biden says after pandemic briefing
+Former vice president Joe Biden pauses during remarks in Wilmington, Del., on Wednesday.
+Former vice president Joe Biden pauses during remarks in Wilmington, Del., on Wednesday. (Jonathan Ernst/Reuters)
+
+In remarks in Wilmington, Del., on Wednesday afternoon after a meeting with public health experts, Biden said Americans should trust any coronavirus vaccine developed under the Trump administration only if the president gives “honest answers” to questions about its safety, effectiveness and equitable distribution.
+
+“I trust vaccines. I trust scientists. But I don’t trust Donald Trump, and at this point, the American people can’t, either,” Biden said.
+
+The Democratic presidential nominee said he is “more hopeful than ever in the power of science” to develop a vaccine. But he added, “Scientific breakthroughs don’t care about calendars any more than the virus does. They certainly don’t adhere to election cycles. And their timing, their approval and their distribution should never, ever be distorted by political considerations. They should be determined by science and safety alone.”
+
+Biden also focused on Trump’s performance during an ABC News town hall on Tuesday night, accusing the president of “undercutting” the use of face masks to slow the spread of the virus and contending that his remarks revealed his “lack of seriousness” about the pandemic.
+
+“We’re heading into a very dangerous autumn,” Biden said, citing models that show coronavirus cases spiking again in November.
+
+And in response to Trump’s criticism that Biden hasn’t instituted a national mask mandate, the former vice president said with a laugh, “I’m not the president. He’s the president.”
+
+Biden said his legal team is still uncertain whether he would have the authority as president to institute a national mask mandate via an executive order. “We think we do, but I can’t guarantee you that yet,” he said, adding that he would also call all governors to the White House and urge them to implement mandates in their states.'
+
+
+tokens = spacy_parse(c(Trump=txt, Biden=txt2), dependency=T)
+
+
+tokens %>%
+  annotate_tqueries('quote', spacy_quote_tqueries(), overwrite=T) %>%
+  spacy_span_quotes() %>%
+  syntax_reader(annotation='quote', 'source', 'quote')
+
+
+tokens %>%
+  annotate_tqueries('quote', spacy_quote_tqueries(), overwrite=T) %>%
+  spacy_span_quotes() %>%
+  plot_tree(annotation='quote', sentence_i = 20)
+
+txt = 'Joe Biden to campaign in North Carolina as Trump draws more ire over Covid response'
+spacy_parse(txt, dependency=T) %>%
+  annotate_tqueries('clause', spacy_clause_tqueries(), overwrite=T) %>%
+  plot_tree(annotation = 'clause')
+
+
+tokens %>%
+  annotate_tqueries('clause', spacy_clause_tqueries(), overwrite=T) %>%
+  syntax_reader(annotation='clause', 'subject')
+
+```
+
+

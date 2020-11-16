@@ -1,0 +1,23 @@
+Package: rsyntaxRecipes
+Type: Package
+Title: Recipes for working with rsyntax
+Version: 0.1.0
+Date: 2020-09-22
+Author: Kasper Welbers and Wouter van Atteveldt
+Maintainer: Kasper Welbers <kasperwelbers@gmail.com>
+Depends: 
+    R (>= 3.2.0)
+Imports:
+    rsyntax,
+    methods,
+    magrittr,
+LazyData: true
+Encoding: UTF-8
+Description: Contains various recipes for using the rsyntax package. These
+    recipes can be used off-the-shelf, but the better (and intended) usage
+    is to copy them and modify them for a specific use case, or to use them as 
+    inspiration for how to work with rsyntax.
+License: GPL-3
+RoxygenNote: 7.1.1
+Suggests: 
+    testthat
